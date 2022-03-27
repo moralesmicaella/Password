@@ -13,6 +13,7 @@
 		24A640F327F02A8300891C23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24A640F127F02A8300891C23 /* LaunchScreen.storyboard */; };
 		24A640FC27F02E2000891C23 /* PasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A640FB27F02E2000891C23 /* PasswordView.swift */; };
 		24A6410127F047EB00891C23 /* PasswordCriteriaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A6410027F047EB00891C23 /* PasswordCriteriaView.swift */; };
+		24A6410327F04E7700891C23 /* PasswordStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A6410227F04E7700891C23 /* PasswordStatusView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		24A640F427F02A8300891C23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		24A640FB27F02E2000891C23 /* PasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordView.swift; sourceTree = "<group>"; };
 		24A6410027F047EB00891C23 /* PasswordCriteriaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordCriteriaView.swift; sourceTree = "<group>"; };
+		24A6410227F04E7700891C23 /* PasswordStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStatusView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 		24A640FF27F047C600891C23 /* PasswordStatusView */ = {
 			isa = PBXGroup;
 			children = (
+				24A6410227F04E7700891C23 /* PasswordStatusView.swift */,
 				24A6410027F047EB00891C23 /* PasswordCriteriaView.swift */,
 			);
 			name = PasswordStatusView;
@@ -156,6 +159,7 @@
 				24A640EB27F02A7F00891C23 /* ViewController.swift in Sources */,
 				24A640FC27F02E2000891C23 /* PasswordView.swift in Sources */,
 				24A6410127F047EB00891C23 /* PasswordCriteriaView.swift in Sources */,
+				24A6410327F04E7700891C23 /* PasswordStatusView.swift in Sources */,
 				24A640E727F02A7F00891C23 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
