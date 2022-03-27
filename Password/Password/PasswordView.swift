@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol PasswordViewDelegate:  AnyObject {
+    func editingChanged(_ sender: PasswordView)
+}
+
 class PasswordView: UIView {
     
     let lockImageView = UIImageView(image: UIImage(systemName: "lock.fill"))
@@ -16,6 +20,8 @@ class PasswordView: UIView {
     let errorMessageLabel = UILabel()
     
     var placeholder: String
+    
+    weak var delegate: PasswordViewDelegate?
     
     init(placeholder: String) {
         self.placeholder = placeholder
@@ -42,11 +48,12 @@ extension PasswordView {
         passwordTextField.keyboardType = .asciiCapable
         passwordTextField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.secondaryLabel])
         passwordTextField.delegate = self
+        passwordTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         
         eyeButton.translatesAutoresizingMaskIntoConstraints = false
         eyeButton.setImage(UIImage(systemName: "eye.circle"), for: .normal)
         eyeButton.setImage(UIImage(systemName: "eye.slash.circle"), for: .selected)
-        eyeButton.addTarget(self, action: #selector(togglePasswordView(_:)), for: .touchUpInside)
+        eyeButton.addTarget(self, action: #selector(togglePasswordView), for: .touchUpInside)
         
         
         dividerView.translatesAutoresizingMaskIntoConstraints = false
@@ -58,7 +65,7 @@ extension PasswordView {
         errorMessageLabel.text = "Your password must meet the requirements below."
         errorMessageLabel.numberOfLines = 0
         errorMessageLabel.lineBreakMode = .byWordWrapping
-        errorMessageLabel.isHidden = false
+        errorMessageLabel.isHidden = true
     }
     
     private func layout() {
@@ -114,10 +121,13 @@ extension PasswordView {
         passwordTextField.isSecureTextEntry.toggle()
         eyeButton.isSelected.toggle()
     }
+    
+    @objc private func textFieldEditingChanged(_ sender: UITextField) {
+        delegate?.editingChanged(self)
+    }
 }
 
-// MARK: - TEXT FIELD DELEGATE
+// MARK: - UITextFieldDelegate
 extension PasswordView: UITextFieldDelegate {
-    
 }
 

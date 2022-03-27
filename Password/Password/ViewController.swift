@@ -31,7 +31,10 @@ extension ViewController {
         stackView.spacing = 20
         
         newPasswordView.translatesAutoresizingMaskIntoConstraints = false
+        newPasswordView.delegate = self
+        
         statusView.translatesAutoresizingMaskIntoConstraints = false
+        
         confirmPasswordTextView.translatesAutoresizingMaskIntoConstraints = false
         
         resetButton.translatesAutoresizingMaskIntoConstraints = false
@@ -61,5 +64,16 @@ extension ViewController {
 extension ViewController {
     @objc private func resetPasswordButtonTapped() {
         
+    }
+}
+
+// MARK: - PasswordViewDelegate
+extension ViewController: PasswordViewDelegate {
+    func editingChanged(_ sender: PasswordView) {
+        if let text = sender.passwordTextField.text {
+            if sender == newPasswordView {
+                statusView.updateDisplay(text)
+            }
+        }
     }
 }
