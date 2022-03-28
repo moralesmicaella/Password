@@ -9,6 +9,8 @@ import UIKit
 
 protocol PasswordViewDelegate:  AnyObject {
     func editingChanged(_ sender: PasswordView)
+    func editingDidEnd(_ sender: PasswordView)
+    func editingDidBegin(_ sender: PasswordView)
 }
 
 class PasswordView: UIView {
@@ -20,8 +22,13 @@ class PasswordView: UIView {
     let errorMessageLabel = UILabel()
     
     var placeholder: String
-    
+    var customValidation: CustomValidation?
     weak var delegate: PasswordViewDelegate?
+    
+    var text: String? {
+        get { return passwordTextField.text }
+        set { passwordTextField.text = newValue }
+    }
     
     init(placeholder: String) {
         self.placeholder = placeholder
@@ -127,7 +134,43 @@ extension PasswordView {
     }
 }
 
+// MARK: - VALIDATION
+extension PasswordView {
+    func validate() -> Bool {
+        if let customValidation = customValidation,
+           let customValidationResult = customValidation(text),
+           !customValidationResult.isValid {
+            showError(customValidationResult.errorMessage)
+            return false
+        }
+        clearError()
+        return true
+    }
+    
+    private func showError(_ errorMessage: String) {
+        errorMessageLabel.isHidden = false
+        errorMessageLabel.text = errorMessage
+    }
+    
+    func clearError() {
+        errorMessageLabel.isHidden = true
+        errorMessageLabel.text = ""
+    }
+}
+
 // MARK: - UITextFieldDelegate
 extension PasswordView: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        delegate?.editingDidBegin(self)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        delegate?.editingDidEnd(self)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.endEditing(true)
+        return true
+    }
 }
 

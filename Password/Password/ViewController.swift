@@ -12,19 +12,76 @@ class ViewController: UIViewController {
     let stackView = UIStackView()
     let newPasswordView = PasswordView(placeholder: "New Password")
     let statusView = PasswordStatusView()
-    let confirmPasswordTextView = PasswordView(placeholder: "Re-enter new password")
+    let confirmPasswordView = PasswordView(placeholder: "Re-enter new password")
     let resetButton = UIButton(type: .system)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setup()
         style()
         layout()
     }
 
 }
 
-// MARK: - STYLE AND LAYOUT
+// MARK: - SETUP, STYLE AND LAYOUT
 extension ViewController {
+    private func setup() {
+        setupNewPassword()
+        setupConfirmPassword()
+        setupDismissKeyboardGesture()
+    }
+    
+    private func setupNewPassword() {
+        let newPasswordValidation: CustomValidation = { text in
+            
+            // Empty text
+            guard let text = text, !text.isEmpty else {
+                self.statusView.reset()
+                return (false, "Enter your password")
+            }
+            
+            // Valid characters @:?!()$#^%&,./\\\\
+            let validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,@:?!()$^%&\\/#"
+            let invalidSet = CharacterSet(charactersIn: validChars).inverted
+            guard text.rangeOfCharacter(from: invalidSet) == nil else {
+                self.statusView.reset()
+                return (false, "Enter valid special chars (.,@:?!()$^%&\\/#) with no spaces")
+            }
+            
+            // Criteria met
+            self.statusView.updateDisplay(text)
+            if !self.statusView.validate(text) {
+                return (false, "Your password must meet the requirements below")
+            }
+            
+            return (true, "")
+        }
+        
+        newPasswordView.customValidation = newPasswordValidation
+    }
+    
+    private func setupConfirmPassword() {
+        let confirmPasswordValidation: CustomValidation = { text in
+            guard let text = text, !text.isEmpty else {
+                return (false, "Enter your password.")
+            }
+            
+            guard text == self.newPasswordView.text else {
+                return (false, "Passwords do not match.")
+            }
+            
+            return (true, "")
+        }
+        
+        confirmPasswordView.customValidation = confirmPasswordValidation
+    }
+    
+    private func setupDismissKeyboardGesture() {
+        let dismissKeyboardTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        view.addGestureRecognizer(dismissKeyboardTap)
+    }
+    
     private func style() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -35,7 +92,8 @@ extension ViewController {
         
         statusView.translatesAutoresizingMaskIntoConstraints = false
         
-        confirmPasswordTextView.translatesAutoresizingMaskIntoConstraints = false
+        confirmPasswordView.translatesAutoresizingMaskIntoConstraints = false
+        confirmPasswordView.delegate = self
         
         resetButton.translatesAutoresizingMaskIntoConstraints = false
         resetButton.configuration = .filled()
@@ -48,7 +106,7 @@ extension ViewController {
         
         stackView.addArrangedSubview(newPasswordView)
         stackView.addArrangedSubview(statusView)
-        stackView.addArrangedSubview(confirmPasswordTextView)
+        stackView.addArrangedSubview(confirmPasswordView)
         stackView.addArrangedSubview(resetButton)
         
         NSLayoutConstraint.activate([
@@ -63,17 +121,36 @@ extension ViewController {
 // MARK: - ACTIONS
 extension ViewController {
     @objc private func resetPasswordButtonTapped() {
-        
+        _ = confirmPasswordView.validate()
+    }
+    
+    @objc func viewTapped(_ recognizer: UITapGestureRecognizer) {
+        view.endEditing(true)
+    }
+    
+    private func updateStatusViewDisplay(_ sender: PasswordView) {
+        if sender === newPasswordView {
+            if let text = sender.passwordTextField.text {
+                statusView.updateDisplay(text)
+            }
+        }
     }
 }
 
 // MARK: - PasswordViewDelegate
 extension ViewController: PasswordViewDelegate {
+    func editingDidBegin(_ sender: PasswordView) {
+        statusView.shouldResetCriteria = true
+        sender.clearError()
+        updateStatusViewDisplay(sender)
+    }
+    
     func editingChanged(_ sender: PasswordView) {
-        if let text = sender.passwordTextField.text {
-            if sender == newPasswordView {
-                statusView.updateDisplay(text)
-            }
-        }
+        updateStatusViewDisplay(sender)
+    }
+    
+    func editingDidEnd(_ sender: PasswordView) {
+        statusView.shouldResetCriteria = false
+        _ = sender.validate()
     }
 }
