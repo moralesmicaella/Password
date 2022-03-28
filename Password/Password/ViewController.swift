@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     let confirmPasswordView = PasswordView(placeholder: "Re-enter new password")
     let resetButton = UIButton(type: .system)
     
+    var alert: UIAlertController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -65,11 +67,11 @@ extension ViewController {
     private func setupConfirmPassword() {
         let confirmPasswordValidation: CustomValidation = { text in
             guard let text = text, !text.isEmpty else {
-                return (false, "Enter your password.")
+                return (false, "Enter your password")
             }
             
             guard text == self.newPasswordView.text else {
-                return (false, "Passwords do not match.")
+                return (false, "Passwords do not match")
             }
             
             return (true, "")
@@ -150,7 +152,7 @@ extension ViewController {
 
 // MARK: - ACTIONS
 extension ViewController {
-    @objc private func resetPasswordButtonTapped() {
+    @objc private func resetPasswordButtonTapped(_ sender: UIButton) {
         view.endEditing(true)
         
         let isValidNewPassword = newPasswordView.validate()
@@ -161,12 +163,13 @@ extension ViewController {
         }
     }
     
-    @objc func viewTapped(_ recognizer: UITapGestureRecognizer) {
+    @objc private func viewTapped(_ recognizer: UITapGestureRecognizer) {
         view.endEditing(true)
     }
     
     private func showAlert(title: String, message: String) {
-        let alert =  UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert =  UIAlertController(title: title, message: message, preferredStyle: .alert)
+        guard let alert = alert else { return }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         
         present(alert, animated: true, completion: nil)
@@ -196,5 +199,12 @@ extension ViewController: PasswordViewDelegate {
     func editingDidEnd(_ sender: PasswordView) {
         statusView.shouldResetCriteria = false
         _ = sender.validate()
+    }
+}
+
+// MARK: - TESTS
+extension ViewController {
+    func resetPasswordButtonTappedTest(_ sender: UIButton) {
+        resetPasswordButtonTapped(sender)
     }
 }
